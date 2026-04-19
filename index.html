@@ -3,56 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AHYPAR | Admin Registration</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <title>AHYPAR | ELITE MANAGEMENT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
         :root {
             --cyan: #00f2ff;
             --magenta: #ff0055;
-            --glass: rgba(5, 5, 12, 0.96);
-            --border: rgba(0, 242, 255, 0.25);
-            --glow: 0 0 20px rgba(0, 242, 255, 0.3);
+            --dark-bg: #05050c;
+            --glass: rgba(10, 10, 20, 0.85);
+            --border: rgba(0, 242, 255, 0.3);
+            --glow: 0 0 15px rgba(0, 242, 255, 0.4);
+            --neon-text: 0 0 10px rgba(0, 242, 255, 0.8);
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; }
-        body { background: #000 url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG5qNGR3eHh6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R/3o7TKMGpxxWlHXYJvW/giphy.gif') center/cover no-repeat fixed; color: #fff; min-height: 100vh; }
-        .overlay { background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(8,0,15,0.98) 100%); min-height: 100vh; padding: 20px; }
-        .container { width: 100%; max-width: 700px; margin: 0 auto; }
+        
+        body { 
+            background: #000 url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG5qNGR3eHh6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R/3o7TKMGpxxWlHXYJvW/giphy.gif') center/cover no-repeat fixed; 
+            color: #fff; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-        nav { position: fixed; top: 20px; right: 20px; z-index: 1000; }
-        .menu-dots { font-size: 35px; cursor: pointer; color: var(--cyan); text-shadow: var(--glow); }
-        .dropdown { display: none; position: absolute; right: 0; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; width: 220px; backdrop-filter: blur(15px); box-shadow: var(--glow); }
-        .dropdown a { display: block; padding: 15px; color: #fff; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; }
-        .dropdown a:hover { background: var(--cyan); color: #000; }
+        .overlay { 
+            background: radial-gradient(circle at center, rgba(0, 242, 255, 0.05) 0%, rgba(8,0,15,0.98) 100%); 
+            min-height: 100vh; 
+            padding: 20px; 
+        }
 
-        .view { display: none; background: var(--glass); padding: 30px; border-radius: 28px; border: 1px solid var(--border); backdrop-filter: blur(25px); animation: fadeIn 0.4s ease; }
+        .container { width: 100%; max-width: 750px; margin: 0 auto; }
+
+        /* Navigation */
+        nav { position: fixed; top: 25px; right: 25px; z-index: 1000; }
+        .menu-dots { 
+            font-size: 38px; cursor: pointer; color: var(--cyan); 
+            text-shadow: var(--neon-text); transition: 0.3s;
+        }
+        .menu-dots:hover { transform: rotate(90deg) scale(1.2); }
+        
+        .dropdown { 
+            display: none; position: absolute; right: 0; 
+            background: var(--glass); border: 1px solid var(--border); 
+            border-radius: 15px; width: 240px; backdrop-filter: blur(20px); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); overflow: hidden;
+        }
+        .dropdown a { 
+            display: block; padding: 18px; color: #fff; text-decoration: none; 
+            font-size: 15px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05); 
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+        }
+        .dropdown a:hover { background: var(--cyan); color: #000; padding-left: 25px; }
+
+        /* Views & Cards */
+        .view { 
+            display: none; background: var(--glass); padding: 40px 30px; 
+            border-radius: 30px; border: 1px solid var(--border); 
+            backdrop-filter: blur(30px); animation: slideUp 0.5s ease;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
         .view.active { display: block; }
 
-        h1 { font-family: 'Bebas Neue'; font-size: 4rem; color: var(--cyan); text-align: center; letter-spacing: 5px; }
-        .sec-title { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--magenta); margin: 20px 0; border-left: 5px solid var(--magenta); padding-left: 15px; }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
-        .rules-warning { background: rgba(255, 0, 85, 0.1); border: 2px solid var(--magenta); border-radius: 15px; padding: 20px; margin-bottom: 25px; }
-        .rules-warning li { list-style: none; font-size: 14px; margin-bottom: 8px; color: #ffccd5; }
+        h1 { 
+            font-family: 'Bebas Neue'; font-size: 5rem; color: var(--cyan); 
+            text-align: center; letter-spacing: 10px; text-shadow: var(--neon-text);
+            margin-bottom: -10px;
+        }
+        .sec-title { 
+            font-family: 'Bebas Neue'; font-size: 2.2rem; color: var(--magenta); 
+            margin: 25px 0; border-left: 6px solid var(--magenta); padding-left: 18px;
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
+        }
 
-        .q-builder-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
-        input, select, textarea { background: rgba(0,0,0,0.5); border: 1px solid var(--border); padding: 12px; color: #fff; border-radius: 8px; outline: none; width: 100%; }
+        /* Forms & Inputs */
+        .q-builder-card { 
+            background: rgba(255,255,255,0.04); padding: 20px; border-radius: 18px; 
+            border: 1px solid rgba(0, 242, 255, 0.1); margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .q-builder-card:hover { border-color: var(--cyan); background: rgba(255,255,255,0.07); }
 
-        .btn-main { width: 100%; padding: 18px; background: var(--cyan); color: #000; border: none; font-family: 'Bebas Neue'; font-size: 1.6rem; cursor: pointer; transition: 0.3s; margin-top: 10px; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0% 100%); }
-        .btn-main:hover { background: #fff; }
-        .btn-del { background: var(--magenta); color: #fff; padding: 5px 10px; border: none; cursor: pointer; border-radius: 4px; font-size: 11px; }
+        input, select, textarea { 
+            background: rgba(0,0,0,0.6); border: 1px solid var(--border); 
+            padding: 15px; color: #fff; border-radius: 12px; outline: none; 
+            width: 100%; transition: 0.3s; font-size: 15px;
+        }
+        input:focus, textarea:focus { border-color: var(--magenta); box-shadow: 0 0 10px rgba(255, 0, 85, 0.2); }
 
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .admin-table th { color: var(--cyan); text-align: left; padding: 12px; border-bottom: 2px solid var(--border); font-family: 'Bebas Neue'; }
-        .admin-table td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+        /* Buttons */
+        .btn-main { 
+            width: 100%; padding: 20px; background: var(--cyan); color: #000; 
+            border: none; font-family: 'Bebas Neue'; font-size: 1.8rem; 
+            cursor: pointer; transition: 0.4s; margin-top: 15px; 
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
+            letter-spacing: 2px;
+        }
+        .btn-main:hover { 
+            background: #fff; transform: scale(1.02); 
+            box-shadow: 0 0 25px rgba(255,255,255,0.3); 
+        }
 
-        .status-badge { font-size: 10px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; font-weight: bold; }
-        .status-open { background: #00ff88; color: #000; }
-        .status-closed { background: #555; color: #fff; }
+        .btn-del { 
+            background: linear-gradient(45deg, #ff0055, #88002d); color: #fff; 
+            padding: 8px 15px; border: none; cursor: pointer; border-radius: 6px; 
+            font-size: 12px; font-weight: bold; text-transform: uppercase;
+        }
 
-        footer { text-align: center; padding: 40px 0; opacity: 0.5; font-size: 11px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Rules Box */
+        .rules-warning { 
+            background: linear-gradient(135deg, rgba(255, 0, 85, 0.15) 0%, transparent 100%); 
+            border: 1px solid var(--magenta); border-radius: 20px; padding: 25px; margin-bottom: 30px; 
+        }
+        .rules-warning li { list-style: none; font-size: 15px; margin-bottom: 10px; color: #ffccd5; display: flex; align-items: center; gap: 10px; }
+
+        /* Tables */
+        .admin-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: 15px; }
+        .admin-table th { color: var(--cyan); text-align: left; padding: 15px; font-family: 'Bebas Neue'; font-size: 1.4rem; letter-spacing: 1px; }
+        .admin-table td { background: rgba(255,255,255,0.03); padding: 20px 15px; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .admin-table tr td:first-child { border-radius: 12px 0 0 12px; }
+        .admin-table tr td:last-child { border-radius: 0 12px 12px 0; }
+
+        /* Status Badges */
+        .status-badge { 
+            font-size: 11px; padding: 5px 12px; border-radius: 6px; 
+            text-transform: uppercase; font-weight: 800; letter-spacing: 1px;
+        }
+        .status-open { background: #00ff88; color: #000; box-shadow: 0 0 10px rgba(0, 255, 136, 0.4); }
+        .status-closed { background: #444; color: #fff; }
+
+        .action-btn { 
+            background: transparent; border: 1px solid var(--cyan); color: var(--cyan);
+            padding: 6px 12px; border-radius: 4px; cursor: pointer; transition: 0.3s;
+        }
+        .action-btn:hover { background: var(--cyan); color: #000; }
+
+        footer { text-align: center; padding: 50px 0; opacity: 0.6; font-size: 12px; letter-spacing: 2px; }
+
+        /* Radio Styling Fix */
+        input[type="radio"] { width: 18px; height: 18px; accent-color: var(--cyan); cursor: pointer; }
+        .radio-label { display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 8px; border: 1px solid transparent; transition: 0.3s; }
+        .radio-label:hover { border-color: var(--cyan); background: rgba(0, 242, 255, 0.05); }
+
     </style>
 </head>
 <body>
@@ -62,73 +159,75 @@
         <nav>
             <div class="menu-dots" onclick="toggleMenu()">⋮</div>
             <div class="dropdown" id="mainMenu">
-                <a href="#" onclick="location.reload()">Home</a>
-                <a href="#" id="loginLink" onclick="showView('view-login')">Staff Login</a>
-                <a href="#" id="dashLink" style="display:none;" onclick="showView('view-dash')">Dashboard</a>
-                <a href="#" id="manageLink" style="display:none;" onclick="showView('view-manage')">Manage Access</a>
-                <a href="#" id="logoutLink" style="display:none;" onclick="logout()">Logout</a>
+                <a href="#" onclick="location.reload()">🏠 Home</a>
+                <a href="#" id="loginLink" onclick="showView('view-login')">🔑 Staff Login</a>
+                <a href="#" id="dashLink" style="display:none;" onclick="showView('view-dash')">📊 Dashboard</a>
+                <a href="#" id="manageLink" style="display:none;" onclick="showView('view-manage')">👥 Manage Access</a>
+                <a href="#" id="logoutLink" style="display:none;" onclick="logout()">🚪 Logout</a>
             </div>
         </nav>
 
-        <header style="padding: 30px 0; text-align: center;">
+        <header style="padding: 40px 0; text-align: center;">
             <h1>AHYPAR</h1>
-            <p style="color:var(--magenta); letter-spacing: 5px; font-weight: bold; font-size: 11px;">ADMINISTRATION PORTAL</p>
+            <p style="color:var(--magenta); letter-spacing: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase;">Elite Administration Systems</p>
         </header>
 
         <div id="view-home" class="view active">
-            <h2 class="sec-title">RECRUITMENT LIST</h2>
+            <h2 class="sec-title">ACTIVE RECRUITMENTS</h2>
             <div id="public-list"></div>
         </div>
 
         <div id="view-apply" class="view">
             <div class="rules-warning">
-                <h3 style="font-family:'Bebas Neue'; margin-bottom:10px;">Before applying, please read:</h3>
-                <li>🔹 Your real age must be 15+.</li>
-                <li>🔹 Active on the server and Discord.</li>
-                <li>🔹 Respect members and follow server rules.</li>
-                <li>🔹 Handle tournaments and help players.</li>
-                <li>🔹 Do not abuse admin power.</li>
-                <li>🔹 Good behavior and communication.</li>
-                <p style="margin-top:10px; font-size: 12px; color: var(--magenta);"><b>⚠️ Warning:</b> Fake info = Immediate Rejection.</p>
+                <h3 style="font-family:'Bebas Neue'; font-size: 1.8rem; margin-bottom:15px; color: var(--magenta);">⚠️ MISSION PROTOCOLS</h3>
+                <li>✅ Real age must be 15 or above.</li>
+                <li>✅ High activity on Server & Discord.</li>
+                <li>✅ Maintain extreme discipline & respect.</li>
+                <li>✅ Proficient in tournament management.</li>
+                <li>✅ Zero tolerance for power abuse.</li>
+                <p style="margin-top:15px; font-size: 13px; color: var(--magenta); font-weight: bold;">[ FAKE INFORMATION WILL LEAD TO BLACKLISTING ]</p>
             </div>
-            <h2 id="apply-title" class="sec-title">APPLICATION</h2>
+            <h2 id="apply-title" class="sec-title">APPLICATION FORM</h2>
             <form action="https://formspree.io/f/meevozjn" method="POST" id="dynamic-form">
                 <input type="hidden" name="Position" id="form-pos-hidden">
                 <div id="form-questions-container"></div>
-                <button type="submit" class="btn-main" style="background:var(--magenta); color:#fff;">SUBMIT APPLICATION</button>
+                <button type="submit" class="btn-main" style="background:var(--magenta); color:#fff;">TRANSMIT APPLICATION</button>
             </form>
         </div>
 
         <div id="view-login" class="view">
-            <h2 class="sec-title">STAFF LOGIN</h2>
-            <input type="password" id="passInput" placeholder="Enter Access Key">
-            <button class="btn-main" onclick="attemptLogin()">UNLOCK SYSTEM</button>
+            <h2 class="sec-title">SYSTEM AUTHENTICATION</h2>
+            <p style="margin-bottom: 20px; opacity: 0.7;">Authorized Personnel Only. Please enter your encryption key.</p>
+            <input type="password" id="passInput" placeholder="Enter Access Passcode">
+            <button class="btn-main" onclick="attemptLogin()">INITIATE LOGIN</button>
         </div>
 
         <div id="view-dash" class="view">
-            <div style="background:var(--magenta); padding:5px 10px; border-radius:4px; font-size:11px; display:inline-block; margin-bottom:10px;">OPERATOR: <span id="op-name"></span></div>
-            <h2 class="sec-title">FORM BUILDER</h2>
-            <input type="text" id="admin-title" placeholder="Position Title (e.g. Moderator)" style="margin-bottom:15px; border-color:var(--cyan)">
+            <div style="background:var(--magenta); padding:6px 15px; border-radius:8px; font-size:12px; font-weight: bold; display:inline-block; margin-bottom:20px;">ACTIVE OPERATOR: <span id="op-name"></span></div>
+            <h2 class="sec-title">RECRUITMENT BUILDER</h2>
+            <input type="text" id="admin-title" placeholder="e.g. Senior Moderator" style="margin-bottom:20px; border-color:var(--cyan); border-width: 2px;">
             
             <div id="questions-builder">
                 <script>
                     for(let i=1; i<=8; i++) {
                         document.write(`
                             <div class="q-builder-card">
-                                <div class="input-group">
-                                    <span style="color:var(--cyan)">#${i}</span>
-                                    <input type="text" id="q-text-${i}" placeholder="Question ${i}">
-                                    <select id="q-type-${i}" style="width:110px;" onchange="toggleOptions(${i})">
-                                        <option value="short">Short</option>
-                                        <option value="para">Para</option>
-                                        <option value="check">Check</option>
+                                <div class="input-group" style="display:flex; gap:10px; margin-bottom:12px;">
+                                    <span style="color:var(--cyan); font-weight:bold;">#${i}</span>
+                                    <input type="text" id="q-text-${i}" placeholder="Enter Question ${i}">
+                                    <select id="q-type-${i}" style="width:130px;" onchange="toggleOptions(${i})">
+                                        <option value="short">Text (Short)</option>
+                                        <option value="para">Paragraph</option>
+                                        <option value="check">Single Choice</option>
                                     </select>
                                 </div>
-                                <div class="input-group">
-                                    <label style="font-size:10px; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="q-req-${i}" checked style="width:14px;"> Required</label>
-                                    <div id="opts-container-${i}" style="display:none; flex:1; gap:5px;">
-                                        <input type="text" id="q-opt1-${i}" placeholder="Opt 1">
-                                        <input type="text" id="q-opt2-${i}" placeholder="Opt 2">
+                                <div class="input-group" style="display:flex; align-items:center; gap:20px;">
+                                    <label style="font-size:12px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                        <input type="checkbox" id="q-req-${i}" checked style="width:16px; height:16px;"> Mandatory field
+                                    </label>
+                                    <div id="opts-container-${i}" style="display:none; flex:1; gap:10px;">
+                                        <input type="text" id="q-opt1-${i}" placeholder="Option A">
+                                        <input type="text" id="q-opt2-${i}" placeholder="Option B">
                                     </div>
                                 </div>
                             </div>
@@ -136,28 +235,28 @@
                     }
                 </script>
             </div>
-            <button class="btn-main" onclick="publishForm()">PUBLISH NOW</button>
+            <button class="btn-main" onclick="publishForm()">DEPLOY RECRUITMENT</button>
 
-            <h2 class="sec-title" style="margin-top:40px;">CONTROL PANEL</h2>
+            <h2 class="sec-title" style="margin-top:50px;">LIVE OPERATIONS</h2>
             <div style="overflow-x:auto;">
                 <table class="admin-table">
-                    <thead><tr><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Position Name</th><th>Current Status</th><th>Action</th></tr></thead>
                     <tbody id="admin-live-table"></tbody>
                 </table>
             </div>
         </div>
 
         <div id="view-manage" class="view">
-            <h2 class="sec-title">STAFF ACCESS</h2>
+            <h2 class="sec-title">ACCESS MANAGEMENT</h2>
             <div class="q-builder-card">
-                <input type="text" id="new-staff-name" placeholder="Staff Member Name">
-                <input type="text" id="new-staff-pass" placeholder="Assign Passcode" style="margin-top:10px;">
-                <button class="btn-main" onclick="addStaff()">ADD STAFF MEMBER</button>
+                <input type="text" id="new-staff-name" placeholder="Full Name">
+                <input type="text" id="new-staff-pass" placeholder="Assign Secure Passcode" style="margin-top:15px;">
+                <button class="btn-main" onclick="addStaff()">CREATE ACCESS KEY</button>
             </div>
             <div id="staff-list-container"></div>
         </div>
 
-        <footer>© 2026 AHYPAR | POWERED BY SHAFIN MIRZA</footer>
+        <footer>© 2026 AHYPAR | SYSTEMS BY SHAFIN MIRZA | ENCRYPTED LINK ACTIVE</footer>
     </div>
 </div>
 
@@ -186,6 +285,7 @@
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.getElementById('mainMenu').style.display = 'none';
+        window.scrollTo(0,0);
         if(id === 'view-home') loadPublicPosts();
         if(id === 'view-dash') loadAdminTable();
         if(id === 'view-manage') loadStaffList();
@@ -198,10 +298,10 @@
 
     function attemptLogin() {
         const pass = document.getElementById('passInput').value.trim();
-        if(pass === "") return alert("Enter passcode!");
+        if(pass === "") return alert("Please enter your passcode.");
 
         if(pass === MASTER_KEY) {
-            saveLogin("Master", "master");
+            saveLogin("Master Operator", "master");
         } else {
             db.ref('staff_access').once('value').then(snap => {
                 const staffs = snap.val() || {};
@@ -211,7 +311,7 @@
                 });
 
                 if(found) saveLogin(found.name, "staff");
-                else alert("Access Denied!");
+                else alert("ACCESS DENIED: Invalid Passcode.");
             });
         }
     }
@@ -239,7 +339,7 @@
         const name = document.getElementById('new-staff-name').value;
         const pass = document.getElementById('new-staff-pass').value;
         if(name && pass) db.ref('staff_access').push({name, pass}).then(() => {
-            alert("Staff Added!");
+            alert("New access key generated successfully.");
             document.getElementById('new-staff-name').value = '';
             document.getElementById('new-staff-pass').value = '';
         });
@@ -249,21 +349,21 @@
         db.ref('staff_access').on('value', snap => {
             const list = snap.val() || {};
             const container = document.getElementById('staff-list-container');
-            container.innerHTML = '<h3 class="sec-title" style="font-size:1.2rem;">Existing Staff</h3>';
+            container.innerHTML = '<h3 class="sec-title" style="font-size:1.4rem;">AUTHORIZED PERSONNEL</h3>';
             Object.keys(list).forEach(key => {
                 const s = list[key];
                 container.innerHTML += `<div class="q-builder-card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>${s.name} (Code: ${s.pass})</span>
-                    <button class="btn-del" onclick="removeStaff('${key}')">Remove</button>
+                    <span><b>${s.name}</b> <span style="margin-left:10px; opacity:0.5; font-size:12px;">KEY: ${s.pass}</span></span>
+                    <button class="btn-del" onclick="removeStaff('${key}')">Revoke</button>
                 </div>`;
             });
         });
     }
-    function removeStaff(key) { if(confirm("Remove this staff?")) db.ref('staff_access/' + key).remove(); }
+    function removeStaff(key) { if(confirm("Revoke this member's access permanently?")) db.ref('staff_access/' + key).remove(); }
 
     function publishForm() {
         const title = document.getElementById('admin-title').value;
-        if(!title) return alert("Position Title Required!");
+        if(!title) return alert("Position Title is required.");
         let questions = [];
         let filled = 0;
         for(let i=1; i<=8; i++) {
@@ -277,9 +377,9 @@
                 });
             }
         }
-        if(filled < 7) return alert("Fill at least 7 questions!");
+        if(filled < 7) return alert("Please define at least 7 questions.");
         db.ref('recruitment_forms').push({ title, questions, status: 'open' }).then(() => {
-            alert("Form Published!");
+            alert("Recruitment mission deployed!");
             showView('view-dash');
         });
     }
@@ -292,9 +392,12 @@
             Object.keys(data).forEach(key => {
                 const item = data[key];
                 container.innerHTML += `
-                    <div class="q-builder-card" onclick="${item.status==='open' ? `renderUserForm(${JSON.stringify(item).replace(/"/g, '&quot;')})` : ''}" style="cursor:pointer">
+                    <div class="q-builder-card" onclick="${item.status==='open' ? `renderUserForm(${JSON.stringify(item).replace(/"/g, '&quot;')})` : ''}" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between;">
+                        <div>
+                           <h3 style="color:var(--cyan); text-transform:uppercase; letter-spacing:2px;">${item.title}</h3>
+                           <p style="font-size:11px; opacity:0.6; margin-top:5px;">${item.status === 'open' ? 'Click to apply now' : 'Applications closed'}</p>
+                        </div>
                         <span class="status-badge status-${item.status}">${item.status}</span>
-                        <h3 style="margin-top:10px; color:var(--cyan)">${item.title}</h3>
                     </div>`;
             });
         });
@@ -307,10 +410,23 @@
         const container = document.getElementById('form-questions-container');
         container.innerHTML = '';
         formData.questions.forEach((q, idx) => {
-            let html = `<div style="margin-bottom:15px;"><label style="font-size:14px; color:var(--cyan)">${q.text} ${q.required ? '*' : ''}</label>`;
-            if(q.type === 'short') html += `<input type="text" name="Q${idx+1}" ${q.required?'required':''}>`;
-            else if(q.type === 'para') html += `<textarea name="Q${idx+1}" rows="3" ${q.required?'required':''}></textarea>`;
-            else if(q.type === 'check') html += `<div style="display:flex; gap:15px; margin-top:5px;"><label style="font-size:12px; cursor:pointer;"><input type="radio" name="Q${idx+1}" value="${q.opt1}" ${q.required?'required':''} style="width:auto; margin-right:5px;"> ${q.opt1}</label><label style="font-size:12px; cursor:pointer;"><input type="radio" name="Q${idx+1}" value="${q.opt2}" style="width:auto; margin-right:5px;"> ${q.opt2}</label></div>`;
+            let html = `<div style="margin-bottom:20px;"><label style="font-size:15px; color:var(--cyan); display:block; margin-bottom:10px; font-weight:600;">${q.text} ${q.required ? '<span style="color:var(--magenta)">*</span>' : ''}</label>`;
+            
+            if(q.type === 'short') {
+                html += `<input type="text" name="Q${idx+1}" ${q.required?'required':''} placeholder="Type your answer...">`;
+            } else if(q.type === 'para') {
+                html += `<textarea name="Q${idx+1}" rows="4" ${q.required?'required':''} placeholder="Provide detailed information..."></textarea>`;
+            } else if(q.type === 'check') {
+                html += `
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <label class="radio-label">
+                        <input type="radio" name="Q${idx+1}" value="${q.opt1}" ${q.required?'required':''}> ${q.opt1}
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="Q${idx+1}" value="${q.opt2}"> ${q.opt2}
+                    </label>
+                </div>`;
+            }
             container.innerHTML += html + `</div>`;
         });
     }
@@ -329,8 +445,8 @@
                     <td><b>${item.title}</b></td>
                     <td><span class="status-badge status-${item.status}">${item.status}</span></td>
                     <td>
-                        <button class="action-btn" style="padding:4px 8px; font-size:10px; cursor:pointer;" onclick="toggleStatus('${key}', '${item.status}')">TOGGLE</button>
-                        ${user.role === 'master' ? `<button class="btn-del" onclick="deleteForm('${key}')">DEL</button>` : ''}
+                        <button class="action-btn" onclick="toggleStatus('${key}', '${item.status}')">Toggle</button>
+                        ${user.role === 'master' ? `<button class="btn-del" style="margin-left:5px;" onclick="deleteForm('${key}')">Del</button>` : ''}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -342,7 +458,7 @@
         db.ref('recruitment_forms/' + key).update({ status: cur === 'open' ? 'closed' : 'open' }).then(() => loadAdminTable());
     }
 
-    function deleteForm(key) { if(confirm("Delete this form?")) db.ref('recruitment_forms/' + key).remove().then(() => loadAdminTable()); }
+    function deleteForm(key) { if(confirm("Permanently delete this recruitment form?")) db.ref('recruitment_forms/' + key).remove().then(() => loadAdminTable()); }
 
     updateUI();
     loadPublicPosts();
